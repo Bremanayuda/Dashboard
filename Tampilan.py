@@ -20,13 +20,54 @@ from sklearn.naive_bayes import MultinomialNB
 
 data = pd.read_csv('amazon.csv')
 
-menu = ["Show Dataset", "K-Means Clustering", "Naive Bayes", "K-Means & Sentiment Analysis"]
+menu = ["Show Dataset", "K-Means Clustering", "Naive Bayes","EDA", "K-Means & Sentiment Analysis"]
 choice = st.sidebar.selectbox("Pilih Dashboard ", menu)
 
 if choice == "Show Dataset":
     st.title("Amazon Data Sales")
     st.write(data)
+elif choice == "EDA":
+    st.header("Exploratory Data Analysis (EDA)")
 
+    st.subheader("Descriptive Statistics")
+    st.write(data.describe())
+
+    st.subheader("Missing Values")
+    missing_values = data.isnull().sum()
+    st.write(missing_values[missing_values > 0])
+
+    st.subheader("Data Types")
+    st.write(data.dtypes)
+
+    st.subheader("Top 10 Main Categories")
+# Check if the 'category' column exists in the dataset
+    if 'category' in data.columns:
+        # Extract the first category from the 'category' column
+        main_categories = data['category'].str.split('|').str[0]
+        
+        # Count the top 10 main categories
+        top_categories = main_categories.value_counts().head(10)
+
+        # Create the bar chart
+        fig, ax = plt.subplots(figsize=(10, 5))
+        top_categories.plot(kind='bar', ax=ax, color='skyblue')
+        ax.set_title('Top 10 Main Categories')
+        ax.set_xticklabels(top_categories.index, rotation=45, ha='right')
+        plt.tight_layout()
+
+        # Display the chart in Streamlit
+        st.pyplot(fig)
+    else:
+        st.warning("The column 'category' does not exist in the dataset.")
+
+    st.subheader("Top Frequent Categories in Categorical Columns")
+    categorical_columns = data.select_dtypes(include=['object']).columns
+    for column in categorical_columns:
+        st.write(f"#### {column}")
+        st.write(data[column].value_counts().head(10))
+elif choice == "K-Means Clustering":
+    st.title("K-Means Clustering")
+    
 elif choice == "K-Means Clustering":
     st.title("K-Means Clustering")
 
